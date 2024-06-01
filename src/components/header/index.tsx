@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { FiUser, FiLogOut, FiLoader, FiLock } from 'react-icons/fi'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { FaAlignJustify } from "react-icons/fa6";
 
 export function Header() {
   const { status, data } = useSession();
@@ -47,7 +48,7 @@ export function Header() {
               />
             )}
             <Link href="/dashboard">
-              <FiUser size={26} color="#4b5563" />
+              <FaAlignJustify  size={26} color="#4b5563" />
             </Link>
 
             <button onClick={handleLogout}>
