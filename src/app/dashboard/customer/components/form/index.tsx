@@ -4,29 +4,50 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/input"
+import { api } from "@/lib/api"
+import { useRouter } from "next/navigation"
+import { toast } from 'react-toastify';
+
 
 const schema = z.object({
     name: z.string().min(1, "O campo nome é obrigatório"),
-    email: z.string().email("Digite um email válido.").min(1, "O email é obrigatório."),
+    email: z.string().email("Digite um email valido.").min(1, "O email é obrigatório."),
     phone: z.string().refine((value) => {
-        return /^(?:\(\d{2}\)\s?)?\d{9}$/.test(value) || /^\d{2}\s\d{9}$/.test(value) || /^\d{11}$/.test(value)
+      return /^(?:\(\d{2}\)\s?)?\d{9}$/.test(value) || /^\d{2}\s\d{9}$/.test(value) || /^\d{11}$/.test(value)
     }, {
-        message: "O numero de telefone deve ser (dd) 999999999"
+      message: "O numero de telefone deve estar (DD) 999999999"
     }),
     address: z.string(),
-})
-
-type FormData = z.infer<typeof schema>
-
-export function NewCustomerForm() {
-
+  })
+  
+  type FormData = z.infer<typeof schema>
+  
+  export function NewCustomerForm({ userId }: { userId: string }) {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-        resolver: zodResolver(schema)
+      resolver: zodResolver(schema)
     })
-
-    function handleRegisterCustomer(data: FormData){
-        console.log(data)
-    }
+  
+    const router = useRouter();
+  
+    async function handleRegisterCustomer(data: FormData) {
+        try {
+          await api.post("/api/customer", {
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            address: data.address,
+            userId: userId
+          });
+      
+          router.replace("/dashboard/customer");
+      
+          toast.success("Cliente cadastrado com sucesso!");
+        } catch (error) {
+          toast.error("Erro ao cadastrar cliente. Por favor, tente novamente.");
+        }
+      }
+      
+  
 
     return (
         <form className="flex flex-col mt-6" onSubmit={handleSubmit(handleRegisterCustomer)}>
@@ -69,7 +90,9 @@ export function NewCustomerForm() {
                 register={register}
             />
 
-            <button className="bg-blue-500 my-4 px-2 h-11 rounded text-white font-bold hover:text-lg duration-200">
+            <button 
+            type="submit"
+            className="bg-blue-500 my-4 px-2 h-11 rounded text-white font-bold hover:text-lg duration-200">
                 Cadastrar
             </button>
         </form>
