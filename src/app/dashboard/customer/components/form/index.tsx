@@ -40,7 +40,6 @@ export function NewCustomerForm({ userId }: { userId: string }) {
     router.replace("/dashboard/customer")
 
   }
-
   return (
     <div>
       <form className="flex flex-col mt-6" onSubmit={handleSubmit(handleRegisterCustomer)}>

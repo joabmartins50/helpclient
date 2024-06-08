@@ -2,11 +2,10 @@ import { Container } from '@/components/container'
 import { authOptions } from '@/lib/auth'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
+
 import Link from 'next/link'
 import { CardCustomer } from './components/card'
 import prismaClient from '@/lib/prisma'
-import { toast } from 'react-toastify';
-
 
 export default async function Customer() {
   const session = await getServerSession(authOptions)
@@ -16,10 +15,11 @@ export default async function Customer() {
   }
 
   const customers = await prismaClient.customer.findMany({
-    where:{
+    where: {
       userId: session.user.id
     }
   })
+
 
   return (
     <Container>
