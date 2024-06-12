@@ -3,6 +3,31 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prismaClient from '@/lib/prisma'
+import { custom } from 'zod'
+
+//ROTA PARA BUSCAR O CLIENTE
+export async function GET(request:Request) {
+  const { searchParams } = new URL(request.url)
+  const customerEmail = searchParams.get("email")
+
+  if(!customerEmail || customerEmail === ""){
+    return NextResponse.json({ message: "Customer not Found"}, { status: 400 })
+  }
+
+  try {
+    const customer = await prismaClient.customer.findFirst({
+      where:{
+        email: customerEmail
+      }
+    })
+
+    return NextResponse.json(customer)
+
+  } catch (error) {
+     return NextResponse.json({ message: "Customer not Found"}, { status: 400 })
+  }
+
+}
 
 
 // ROTA PARA APAGAR O CLIENTE

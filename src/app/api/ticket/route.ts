@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prismaClient from "@/lib/prisma";
-import { error } from "console";
 
+//ROTA PARA ATUALIZAR STATUS
 export async function PATCH(request: Request){
     const session = await getServerSession(authOptions);
 
@@ -36,4 +36,30 @@ export async function PATCH(request: Request){
     } catch (error) {
         return NextResponse.json({ error: "Filed update ticket"}, { status: 400})
     }
+}
+
+//ROTA PARA CADASTRAR TICKET SEM ESTÁ LOGADO
+export async function POST(request:Request) {
+    const { customerId, name, description } = await request.json();
+    
+    if(!customerId || !name || !description){
+        return NextResponse.json({ error: "Failed create new ticket"}, { status: 400 })
+    }
+
+    try {
+
+        await prismaClient.ticket.create({
+            data:{
+                name: name,
+                description: description,
+                status: "ABERTO",
+                customerId: customerId
+            }
+        })
+
+    } catch (error) {
+        return NextResponse.json({ error: "Failed create new ticket"}, { status: 400 })
+    }
+
+    return NextResponse.json({ message: "Cadastrado com sucesso!"})
 }
